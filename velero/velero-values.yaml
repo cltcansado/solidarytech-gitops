@@ -1,0 +1,54 @@
+# Values do chart vmware-tanzu/velero — Estratégia de DR Opção A (ver docs/PCN-DR.md).
+#
+# Sem IRSA disponível (restrição AWS Academy): o plugin AWS
+# do Velero usa `credentials.useSecret: false`, o que faz o SDK da AWS dentro do pod cair no
+# credential provider chain padrão e pegar as credenciais da role da instância (LabRole) via
+# IMDS — mesmo padrão já usado por healer-service/donation-service/volunteer-service.
+
+configuration:
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: solidarytech-velero-backups-432540795967 # igual ao output `velero_bucket_name` do Terraform
+      config:
+        region: us-west-2 # cross-region de propósito: sobrevive à perda da região principal (us-east-1)
+  volumeSnapshotLocation:
+    - name: default
+      provider: aws
+      config:
+        region: us-east-1 # snapshots de EBS ficam na região dos volumes de origem
+
+credentials:
+  useSecret: false
+
+# O chart usa uma imagem `kubectl` num Job/initContainer auxiliar (upgrade de CRDs). A tag
+# default do chart 8.1.0 (`docker.io/bitnami/kubectl:1.31`) foi removida do Docker Hub na
+# migração da Bitnami para o catálogo "legacy" (mid-2025) — sem esse override, o Job trava em
+# ImagePullBackOff para sempre. `bitnamilegacy/kubectl` é o mirror oficial que a própria
+# Bitnami disponibilizou para essas tags antigas.
+kubectl:
+  image:
+    repository: bitnamilegacy/kubectl
+
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.10.0
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+deployNodeAgent: true # backup a nível de arquivo (fallback para PVCs sem snapshot nativo — ex: Prometheus/Loki/Grafana)
+
+resources:
+  requests: { cpu: 100m, memory: 128Mi }
+  limits: { cpu: 300m, memory: 256Mi }
+
+schedules:
+  daily-full-backup:
+    disabled: false
+    schedule: "0 3 * * *" # 03:00 UTC, fora do horário de pico — ver RPO em docs/PCN-DR.md
+    template:
+      includedNamespaces:
+        - solidarytech
+        - observability
+      ttl: "720h0m0s" # 30 dias de retenção, alinhado ao lifecycle do bucket S3
