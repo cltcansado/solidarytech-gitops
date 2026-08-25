@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: healer-service
+  namespace: solidarytech
+  labels:
+    app: healer-service
+spec:
+  selector:
+    app: healer-service
+  ports:
+    - port: 8090
+      targetPort: 8090
+      name: http
+  type: ClusterIP

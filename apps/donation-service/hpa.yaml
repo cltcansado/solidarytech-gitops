@@ -1,0 +1,24 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: donation-service
+  namespace: solidarytech
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: donation-service
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65 # mais conservador que os outros serviços (Hot Path)
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0 # reage rápido a picos de acesso (citados no enunciado)
+    scaleDown:
+      stabilizationWindowSeconds: 120

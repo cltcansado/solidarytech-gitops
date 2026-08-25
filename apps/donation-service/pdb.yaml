@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: donation-service
+  namespace: solidarytech
+spec:
+  minAvailable: 2 # Hot Path: nunca menos de 2 réplicas de pé, nem durante rollout/drain de nó
+  selector:
+    matchLabels:
+      app: donation-service

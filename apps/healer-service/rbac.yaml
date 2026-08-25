@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: healer-service
+  namespace: solidarytech
+---
+# Least privilege: só pode LER e ATUALIZAR (patch) Deployments dentro do namespace
+# `solidarytech` — não pode deletar, não pode tocar em outros namespaces, não pode
+# escalar privilégios. Escopo mínimo necessário para o rollout restart automático.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: healer-service
+  namespace: solidarytech
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: healer-service
+  namespace: solidarytech
+subjects:
+  - kind: ServiceAccount
+    name: healer-service
+    namespace: solidarytech
+roleRef:
+  kind: Role
+  name: healer-service
+  apiGroup: rbac.authorization.k8s.io

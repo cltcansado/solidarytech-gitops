@@ -1,0 +1,12 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: healer-service
+  namespace: solidarytech
+spec:
+  selector:
+    matchLabels: { app: healer-service }
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s

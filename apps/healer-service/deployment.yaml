@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healer-service
+  namespace: solidarytech
+  labels:
+    app: healer-service
+spec:
+  replicas: 1 # não precisa de HA: é um controller reativo, não caminho crítico de tráfego
+  selector:
+    matchLabels:
+      app: healer-service
+  template:
+    metadata:
+      labels:
+        app: healer-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8090"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: healer-service
+      tolerations:
+        - key: "solidarytech.io/spot"
+          operator: "Equal"
+          value: "true"
+          effect: "PreferNoSchedule"
+      securityContext:
+        runAsNonRoot: true
+        # ver comentário equivalente em apps/donation-service/deployment.yaml —
+        # distroless:nonroot exige runAsUser numérico explícito.
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: healer-service
+          image: 432540795967.dkr.ecr.us-east-1.amazonaws.com/solidarytech/healer-service:8d0e2851ff70
+          ports:
+            - containerPort: 8090
+          env:
+            - name: PORT
+              value: "8090"
+            - name: TARGET_NAMESPACE
+              value: "solidarytech"
+            - name: HEAL_COOLDOWN_SECONDS
+              value: "300"
+            # HEALER_WEBHOOK_TOKEN não é setado de propósito: o endpoint só é exposto
+            # dentro do cluster (ClusterIP, sem Ingress) e só o Alertmanager do próprio
+            # cluster o alcança. Ver docs/ITSM-AIOPS.md para o hardening recomendado
+            # (Alertmanager `http_config.authorization` + este token) antes de expor
+            # esse serviço além do cluster.
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 150m, memory: 128Mi }
+          readinessProbe:
+            httpGet: { path: /health, port: 8090 }
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet: { path: /health, port: 8090 }
+            initialDelaySeconds: 15
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: tmp
+          emptyDir: {}

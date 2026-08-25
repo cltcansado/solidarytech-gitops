@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: donation-service-db-init
+  namespace: solidarytech
+  annotations:
+    # Precisa existir ANTES do Job de PreSync (db-init-job.yaml) que o monta como volume.
+    # Sem isso, o ArgoCD aplica este ConfigMap só na fase normal de Sync — que roda DEPOIS
+    # do PreSync — e o Job trava em ContainerCreating (`configmap not found`). Marcando este
+    # recurso também como hook PreSync, com sync-wave anterior ao do Job, garante a ordem.
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-2"
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS donations (
+        id SERIAL PRIMARY KEY,
+        ngo_id INT NOT NULL,
+        amount NUMERIC(10, 2) NOT NULL,
+        donor_name VARCHAR(100) NOT NULL,
+        status VARCHAR(20) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE INDEX IF NOT EXISTS idx_donations_ngo_id ON donations (ngo_id);
+    CREATE INDEX IF NOT EXISTS idx_donations_created_at ON donations (created_at DESC);

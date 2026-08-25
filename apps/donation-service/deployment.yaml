@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: donation-service
+  namespace: solidarytech
+  labels:
+    app: donation-service
+    solidarytech.io/tier: critical
+spec:
+  replicas: 3 # Hot Path — mais réplicas que os outros 2 serviços por padrão
+  selector:
+    matchLabels:
+      app: donation-service
+  template:
+    metadata:
+      labels:
+        app: donation-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8082"
+        prometheus.io/path: "/metrics"
+    spec:
+      # nada de toleration para o node group Spot aqui: o Hot Path fica no node group
+      # ON_DEMAND (mais estável), custo maior compensado pela criticidade do serviço.
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels: { app: donation-service }
+                topologyKey: kubernetes.io/hostname
+      securityContext:
+        runAsNonRoot: true
+        # A imagem distroless:nonroot define o usuário pelo NOME "nonroot" no /etc/passwd
+        # embutido, não por UID numérico direto na diretiva USER do Dockerfile. Sem runAsUser
+        # explícito, o kubelet não consegue verificar que o container roda como não-root e
+        # recusa iniciar: "container has runAsNonRoot and image has non-numeric user".
+        # 65532 é o UID padrão do usuário "nonroot" em todas as imagens distroless do Google.
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: donation-service
+          image: 432540795967.dkr.ecr.us-east-1.amazonaws.com/solidarytech/donation-service:48b43e23dc11
+          ports:
+            - containerPort: 8082
+          envFrom:
+            - configMapRef: { name: donation-service-config }
+            - secretRef: { name: donation-service-db }
+          resources:
+            requests:
+              cpu: 200m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet: { path: /health, port: 8082 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 8082 }
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }

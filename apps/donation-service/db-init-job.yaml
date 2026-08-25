@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: donation-service-db-init
+  namespace: solidarytech
+  annotations:
+    # Hook do ArgoCD: roda ANTES do sync dos demais recursos, e é recriado (Replace) a cada
+    # sync — garante que a migração/schema exista antes do Deployment subir, sem passo manual.
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    # sync-wave posterior ao do ConfigMap (db-init-configmap.yaml, wave -2) que este Job monta
+    # como volume — hooks do mesmo tipo respeitam sync-wave, então isso garante que o
+    # ConfigMap já exista quando o Job for criado.
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-init
+          image: postgres:16-alpine
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              echo "Garantindo que o database donation_db existe..."
+              psql "$ADMIN_DATABASE_URL" -tc "SELECT 1 FROM pg_database WHERE datname = 'donation_db'" | grep -q 1 \
+                || psql "$ADMIN_DATABASE_URL" -c "CREATE DATABASE donation_db"
+              echo "Aplicando schema em donation_db..."
+              psql "$DONATION_DATABASE_URL" -f /sql/init.sql
+              echo "OK."
+          envFrom:
+            - secretRef: { name: rds-admin }
+          env:
+            - name: DONATION_DATABASE_URL
+              valueFrom:
+                secretKeyRef: { name: donation-service-db, key: DATABASE_URL }
+          volumeMounts:
+            - { name: sql, mountPath: /sql }
+      volumes:
+        - name: sql
+          configMap: { name: donation-service-db-init }
