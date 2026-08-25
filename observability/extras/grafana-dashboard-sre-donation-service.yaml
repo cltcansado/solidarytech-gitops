@@ -1,0 +1,150 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-sre-donation-service
+  namespace: observability
+  labels:
+    grafana_dashboard: "1"
+data:
+  sre-donation-service.json: |
+    {
+      "title": "SRE — donation-service (SLO / Error Budget)",
+      "uid": "solidarytech-sre-donation",
+      "tags": ["solidarytech", "sre", "slo"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "refresh": "30s",
+      "time": { "from": "now-24h", "to": "now" },
+      "panels": [
+        {
+          "id": 1,
+          "title": "SLI 1 — Disponibilidade (5m)",
+          "type": "stat",
+          "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+          "targets": [
+            { "expr": "1 - donation_service:error_ratio:rate5m", "legendFormat": "disponibilidade" }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "yellow", "value": 0.995 },
+                  { "color": "green", "value": 0.999 }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 2,
+          "title": "SLO 1 — Meta: 99.9% de sucesso",
+          "type": "text",
+          "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+          "options": {
+            "content": "**SLO**: 99.9% das requisições em /donations sem erro 5xx, em janela de 30 dias.\n\n**Error Budget mensal**: ~43 minutos de indisponibilidade.",
+            "mode": "markdown"
+          }
+        },
+        {
+          "id": 3,
+          "title": "SLI 2 — % requisições < 300ms (5m)",
+          "type": "stat",
+          "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+          "targets": [
+            { "expr": "donation_service:requests_under_300ms:ratio5m", "legendFormat": "sob 300ms" }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "red", "value": null },
+                  { "color": "yellow", "value": 0.95 },
+                  { "color": "green", "value": 0.99 }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 4,
+          "title": "SLO 2 — Meta: 99% < 300ms",
+          "type": "text",
+          "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+          "options": {
+            "content": "**SLO**: 99% das requisições em /donations respondidas em menos de 300ms, em janela de 30 dias.",
+            "mode": "markdown"
+          }
+        },
+        {
+          "id": 5,
+          "title": "Error Budget consumido (30d, disponibilidade)",
+          "type": "gauge",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 6 },
+          "targets": [
+            {
+              "expr": "clamp_min((0.001 - (1 - avg_over_time(donation_service:error_ratio:rate5m[30d]))) / 0.001 * -1 + 1, 0)",
+              "legendFormat": "budget consumido"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percentunit",
+              "min": 0,
+              "max": 1,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "yellow", "value": 0.5 },
+                  { "color": "red", "value": 0.9 }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 6,
+          "title": "Latência p95 — /donations",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 6 },
+          "targets": [{ "expr": "donation_service:latency_p95_seconds", "legendFormat": "p95" }],
+          "fieldConfig": { "defaults": { "unit": "s" } }
+        },
+        {
+          "id": 7,
+          "title": "Taxa de erro 5xx — /donations",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
+          "targets": [{ "expr": "donation_service:error_ratio:rate5m", "legendFormat": "error ratio" }],
+          "fieldConfig": { "defaults": { "unit": "percentunit" } }
+        },
+        {
+          "id": 8,
+          "title": "Tráfego (req/s) — /donations",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+          "targets": [{ "expr": "donation_service:requests:rate5m", "legendFormat": "req/s" }]
+        },
+        {
+          "id": 9,
+          "title": "Restarts do donation-service (proxy de MTTR / auto-healing)",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+          "targets": [
+            {
+              "expr": "increase(kube_pod_container_status_restarts_total{namespace=\"solidarytech\", pod=~\"donation-service-.*\"}[10m])",
+              "legendFormat": "{{pod}}"
+            },
+            {
+              "expr": "increase(healer_actions_total{deployment=\"donation-service\", result=\"restarted\"}[10m])",
+              "legendFormat": "auto-healing acionado"
+            }
+          ]
+        }
+      ]
+    }

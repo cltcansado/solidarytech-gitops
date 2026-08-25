@@ -1,0 +1,24 @@
+# Values do chart grafana/loki-stack — agregação de logs estruturados dos 3 serviços +
+# healer-service (Promtail como DaemonSet coleta stdout/stderr de todos os pods).
+
+loki:
+  persistence:
+    enabled: true
+    size: 10Gi
+  resources:
+    requests: { cpu: 100m, memory: 256Mi }
+    limits: { cpu: 300m, memory: 512Mi }
+  config:
+    limits_config:
+      retention_period: 336h # 14 dias — alinhado à retenção do Prometheus
+
+promtail:
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { cpu: 100m, memory: 128Mi }
+
+grafana:
+  enabled: false # Grafana já vem pelo kube-prometheus-stack — não duplicar
+
+prometheus:
+  enabled: false # idem: Prometheus já vem pelo kube-prometheus-stack

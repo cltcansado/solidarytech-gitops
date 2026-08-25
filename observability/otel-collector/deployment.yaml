@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  namespace: observability
+  labels:
+    app: otel-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-collector
+  template:
+    metadata:
+      labels:
+        app: otel-collector
+    spec:
+      serviceAccountName: otel-collector
+      containers:
+        - name: otel-collector
+          image: otel/opentelemetry-collector-contrib:0.102.0
+          args: ["--config=/etc/otel/config.yaml"]
+          ports:
+            - { containerPort: 4317, name: otlp-grpc }
+            - { containerPort: 4318, name: otlp-http }
+            - { containerPort: 8889, name: prometheus }
+          envFrom:
+            - secretRef:
+                name: apm-credentials
+                optional: true # cluster sobe mesmo sem conta de APM ainda configurada
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { cpu: 300m, memory: 256Mi }
+          volumeMounts:
+            - { name: config, mountPath: /etc/otel }
+      volumes:
+        - name: config
+          configMap: { name: otel-collector-config }
