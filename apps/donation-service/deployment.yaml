@@ -42,7 +42,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: donation-service
-          image: 432540795967.dkr.ecr.us-east-1.amazonaws.com/solidarytech/donation-service:48b43e23dc11
+          image: 432540795967.dkr.ecr.us-east-1.amazonaws.com/solidarytech/donation-service:804d0c401c4a
           ports:
             - containerPort: 8082
           envFrom:
