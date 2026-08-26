@@ -28,22 +28,20 @@ data:
       prometheus:
         endpoint: 0.0.0.0:8889
 
-      # APM (Datadog) — DESLIGADO até a API key real estar no Secret `apm-credentials`
-      # (TF_VAR_datadog_api_key). O Collector recusa subir (CrashLoopBackOff) se `api.key`
-      # estiver vazio. Descomente e adicione "datadog" nos pipelines abaixo quando a key
-      # estiver preenchida.
-      # datadog:
-      #   api:
-      #     key: ${env:DD_API_KEY}
-      #     site: ${env:DD_SITE}
+      # APM (Datadog). Chave/site vêm do Secret `apm-credentials` (TF_VAR_datadog_api_key /
+      # TF_VAR_datadog_site), injetado no container como DD_API_KEY / DD_SITE.
+      datadog:
+        api:
+          key: ${env:DD_API_KEY}
+          site: ${env:DD_SITE}
 
     service:
       pipelines:
         traces:
           receivers: [otlp]
           processors: [k8sattributes, resourcedetection, batch]
-          exporters: [debug]
+          exporters: [debug, datadog]
         metrics:
           receivers: [otlp]
           processors: [resourcedetection, batch]
-          exporters: [debug, prometheus]
+          exporters: [debug, prometheus, datadog]
