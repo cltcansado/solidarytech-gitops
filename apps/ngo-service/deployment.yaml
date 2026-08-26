@@ -55,7 +55,8 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
-            httpGet: { path: /health, port: 8081 }
+            # /live em vez de /health de propósito — ver achado #13 (donation-service).
+            httpGet: { path: /live, port: 8081 }
             initialDelaySeconds: 15
             periodSeconds: 20
           securityContext:
