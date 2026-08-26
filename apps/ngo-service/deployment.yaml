@@ -35,7 +35,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: ngo-service
-          image: 432540795967.dkr.ecr.us-east-1.amazonaws.com/solidarytech/ngo-service:8d0e2851ff70
+          image: 432540795967.dkr.ecr.us-east-1.amazonaws.com/solidarytech/ngo-service:64db285fe9d4
           ports:
             - containerPort: 8081
           envFrom:
