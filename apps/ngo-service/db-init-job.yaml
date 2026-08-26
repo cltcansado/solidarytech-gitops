@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ngo-service-db-init
+  namespace: solidarytech
+  annotations:
+    # Hook do ArgoCD: roda ANTES do sync dos demais recursos, e é recriado (Replace) a cada
+    # sync — mesmo padrão de donation-service/db-init-job.yaml.
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-init
+          image: postgres:16-alpine
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              echo "Garantindo que o database ngo_db existe..."
+              psql "$ADMIN_DATABASE_URL" -tc "SELECT 1 FROM pg_database WHERE datname = 'ngo_db'" | grep -q 1 \
+                || psql "$ADMIN_DATABASE_URL" -c "CREATE DATABASE ngo_db"
+              echo "Aplicando schema em ngo_db..."
+              psql "$NGO_DATABASE_URL" -f /sql/init.sql
+              echo "OK."
+          envFrom:
+            - secretRef: { name: rds-admin }
+          env:
+            - name: NGO_DATABASE_URL
+              valueFrom:
+                secretKeyRef: { name: ngo-service-db, key: DATABASE_URL }
+          volumeMounts:
+            - { name: sql, mountPath: /sql }
+      volumes:
+        - name: sql
+          configMap: { name: ngo-service-db-init }

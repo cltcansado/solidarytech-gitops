@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ngo-service-db-init
+  namespace: solidarytech
+  annotations:
+    # Precisa existir ANTES do Job de PreSync (db-init-job.yaml) que o monta como volume —
+    # mesmo motivo documentado em donation-service/db-init-configmap.yaml.
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/sync-wave: "-2"
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS ngos (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        cause VARCHAR(100) NOT NULL,
+        city VARCHAR(100) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+
+    INSERT INTO ngos (name, email, cause, city) VALUES
+    ('Anjos de Patas', 'contato@anjosdepatas.org', 'Protecao Animal', 'Osasco'),
+    ('Educa Mais', 'info@educamais.org', 'Educacao', 'Sao Paulo')
+    ON CONFLICT (email) DO NOTHING;
