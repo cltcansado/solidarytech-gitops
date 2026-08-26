@@ -5,11 +5,11 @@ metadata:
   namespace: solidarytech
   annotations:
     # Hook do ArgoCD: roda ANTES do sync dos demais recursos, e é recriado (Replace) a cada
-    # sync — garante que a migração/schema exista antes do Deployment subir, sem passo manual.
+    # sync - garante que a migração/schema exista antes do Deployment subir, sem passo manual.
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
     # sync-wave posterior ao do ConfigMap (db-init-configmap.yaml, wave -2) que este Job monta
-    # como volume — hooks do mesmo tipo respeitam sync-wave, então isso garante que o
+    # como volume - hooks do mesmo tipo respeitam sync-wave, então isso garante que o
     # ConfigMap já exista quando o Job for criado.
     argocd.argoproj.io/sync-wave: "-1"
 spec:

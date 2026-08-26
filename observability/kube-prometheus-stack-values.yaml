@@ -5,7 +5,7 @@ prometheus:
   prometheusSpec:
     retention: 15d
     # Seleciona QUALQUER ServiceMonitor/PodMonitor do cluster, não só os com o label
-    # padrão do release do Helm — evita fricção de label-matching no hackathon.
+    # padrão do release do Helm - evita fricção de label-matching no hackathon.
     serviceMonitorSelectorNilUsesHelmValues: false
     serviceMonitorSelector: {}
     podMonitorSelectorNilUsesHelmValues: false
@@ -39,7 +39,7 @@ alertmanager:
       receiver: "default-null"
       routes:
         # Alertas mapeados no healer-service (apps/healer-service/app.py) disparam
-        # auto-healing via webhook — parte central da narrativa de MTTR do relatório de SRE.
+        # auto-healing via webhook - parte central da narrativa de MTTR do relatório de SRE.
         - receiver: "healer-service"
           matchers:
             - alertname =~ "DonationServiceHighErrorRate|DonationServiceHighLatency|DonationServiceCrashLooping|NgoServiceCrashLooping|VolunteerServiceCrashLooping"
@@ -61,8 +61,8 @@ alertmanager:
             send_resolved: true
 
 grafana:
-  # Valor FIXO de propósito (não vazio): com adminPassword vazio, o template do chart gera
-  # uma senha ALEATÓRIA a cada render — como o ArgoCD re-renderiza o chart a cada sync, o
+  # Valor FIXO intencionalmente (não vazio): com adminPassword vazio, o template do chart gera
+  # uma senha ALEATÓRIA a cada render - como o ArgoCD re-renderiza o chart a cada sync, o
   # Secret muda de conteúdo toda vez, e a Application nunca fica "Synced" de verdade
   # (fica sempre OutOfSync nesse Secret). TROCAR antes de expor a UI do Grafana publicamente
   # (hoje só ClusterIP, sem Ingress).
@@ -70,7 +70,7 @@ grafana:
   # Sem persistência proposital: dashboards já são provisionados de forma declarativa via
   # o sidecar (grafana.sidecar.dashboards, abaixo), então não há estado que precise
   # sobreviver a um restart do pod. Isso também evita todo o problema de Multi-Attach de
-  # PVC ReadWriteOnce (que exigia strategy Recreate) — e o Recreate, por sua vez, expunha
+  # PVC ReadWriteOnce (que exigia strategy Recreate) - e o Recreate, por sua vez, expunha
   # um bug do ArgoCD 3.4.2 com ServerSideApply=true: mesmo um `kubectl apply --server-side`
   # manual do mesmo manifesto funcionava, mas o apply feito pelo próprio controller do
   # ArgoCD rejeitava o Deployment com "spec.strategy.rollingUpdate: Forbidden" mesmo sem
@@ -100,9 +100,9 @@ grafana:
           options:
             path: /var/lib/grafana/dashboards/solidarytech
 
-# kube-state-metrics expõe requests/limits/usage dos Pods como métrica Prometheus — insumo
+# kube-state-metrics expõe requests/limits/usage dos Pods como métrica Prometheus - insumo
 # direto do exercício de Rightsizing do relatório de FinOps (docs/FINOPS-FORECAST.md).
-# Não confundir com metrics-server (API metrics.k8s.io, pré-requisito do HPA — instalado
+# Não confundir com metrics-server (API metrics.k8s.io, pré-requisito do HPA - instalado
 # à parte, ver argocd/apps/observability-metrics-server.yaml).
 kube-state-metrics:
   enabled: true

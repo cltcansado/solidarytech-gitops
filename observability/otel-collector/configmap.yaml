@@ -15,10 +15,10 @@ data:
       batch: {}
       resourcedetection:
         detectors: [env, system]
-      k8sattributes: {} # enriquece spans com pod/namespace/node — ajuda muito o AIOps a correlacionar
+      k8sattributes: {} # enriquece spans com pod/namespace/node - ajuda muito o AIOps a correlacionar
 
     exporters:
-      # Sempre ativo — garante que dá pra ver os traces mesmo sem conta de APM configurada
+      # Sempre ativo - garante que dá pra ver os traces mesmo sem conta de APM configurada
       # ainda (útil para validar a instrumentação antes de ter Datadog/New Relic no ar).
       debug:
         verbosity: basic

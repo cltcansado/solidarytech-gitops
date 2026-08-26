@@ -1,9 +1,9 @@
-# Values do chart vmware-tanzu/velero — Estratégia de DR Opção A (ver docs/PCN-DR.md).
+# Values do chart vmware-tanzu/velero - Estratégia de DR Opção A (ver docs/PCN-DR.md).
 #
 # Sem IRSA disponível (restrição AWS Academy): o plugin AWS
 # do Velero usa `credentials.useSecret: false`, o que faz o SDK da AWS dentro do pod cair no
 # credential provider chain padrão e pegar as credenciais da role da instância (LabRole) via
-# IMDS — mesmo padrão já usado por healer-service/donation-service/volunteer-service.
+# IMDS - mesmo padrão já usado por healer-service/donation-service/volunteer-service.
 
 configuration:
   backupStorageLocation:
@@ -11,7 +11,7 @@ configuration:
       provider: aws
       bucket: solidarytech-velero-backups-432540795967 # igual ao output `velero_bucket_name` do Terraform
       config:
-        region: us-west-2 # cross-region de propósito: sobrevive à perda da região principal (us-east-1)
+        region: us-west-2 # cross-region por definição: sobrevive à perda da região principal (us-east-1)
   volumeSnapshotLocation:
     - name: default
       provider: aws
@@ -23,7 +23,7 @@ credentials:
 
 # O chart usa uma imagem `kubectl` num Job/initContainer auxiliar (upgrade de CRDs). A tag
 # default do chart 8.1.0 (`docker.io/bitnami/kubectl:1.31`) foi removida do Docker Hub na
-# migração da Bitnami para o catálogo "legacy" (mid-2025) — sem esse override, o Job trava em
+# migração da Bitnami para o catálogo "legacy" (mid-2025) - sem esse override, o Job trava em
 # ImagePullBackOff para sempre. `bitnamilegacy/kubectl` é o mirror oficial que a própria
 # Bitnami disponibilizou para essas tags antigas.
 kubectl:
@@ -37,7 +37,7 @@ initContainers:
       - mountPath: /target
         name: plugins
 
-deployNodeAgent: true # backup a nível de arquivo (fallback para PVCs sem snapshot nativo — ex: Prometheus/Loki/Grafana)
+deployNodeAgent: true # backup a nível de arquivo (fallback para PVCs sem snapshot nativo - ex: Prometheus/Loki/Grafana)
 
 resources:
   requests: { cpu: 100m, memory: 128Mi }
@@ -46,7 +46,7 @@ resources:
 schedules:
   daily-full-backup:
     disabled: false
-    schedule: "0 3 * * *" # 03:00 UTC, fora do horário de pico — ver RPO em docs/PCN-DR.md
+    schedule: "0 3 * * *" # 03:00 UTC, fora do horário de pico - ver RPO em docs/PCN-DR.md
     template:
       includedNamespaces:
         - solidarytech

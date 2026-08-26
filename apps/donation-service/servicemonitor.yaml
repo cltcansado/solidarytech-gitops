@@ -9,4 +9,4 @@ spec:
   endpoints:
     - port: http
       path: /metrics
-      interval: 15s # scrape mais frequente no Hot Path — Golden Metrics do SLO precisam de granularidade
+      interval: 15s # scrape mais frequente no Hot Path - Golden Metrics do SLO precisam de granularidade

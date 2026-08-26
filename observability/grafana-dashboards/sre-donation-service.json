@@ -1,5 +1,5 @@
 {
-  "title": "SRE — donation-service (SLO / Error Budget)",
+  "title": "SRE - donation-service (SLO / Error Budget)",
   "uid": "solidarytech-sre-donation",
   "tags": ["solidarytech", "sre", "slo"],
   "timezone": "browser",
@@ -9,7 +9,7 @@
   "panels": [
     {
       "id": 1,
-      "title": "SLI 1 — Disponibilidade (5m)",
+      "title": "SLI 1 - Disponibilidade (5m)",
       "type": "stat",
       "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
       "targets": [
@@ -31,7 +31,7 @@
     },
     {
       "id": 2,
-      "title": "SLO 1 — Meta: 99.9% de sucesso",
+      "title": "SLO 1 - Meta: 99.9% de sucesso",
       "type": "text",
       "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
       "options": {
@@ -41,7 +41,7 @@
     },
     {
       "id": 3,
-      "title": "SLI 2 — % requisições < 300ms (5m)",
+      "title": "SLI 2 - % requisições < 300ms (5m)",
       "type": "stat",
       "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
       "targets": [
@@ -63,7 +63,7 @@
     },
     {
       "id": 4,
-      "title": "SLO 2 — Meta: 99% < 300ms",
+      "title": "SLO 2 - Meta: 99% < 300ms",
       "type": "text",
       "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
       "options": {
@@ -100,7 +100,7 @@
     },
     {
       "id": 6,
-      "title": "Latência p95 — /donations",
+      "title": "Latência p95 - /donations",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 8, "x": 8, "y": 6 },
       "targets": [{ "expr": "donation_service:latency_p95_seconds", "legendFormat": "p95" }],
@@ -108,7 +108,7 @@
     },
     {
       "id": 7,
-      "title": "Taxa de erro 5xx — /donations",
+      "title": "Taxa de erro 5xx - /donations",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
       "targets": [{ "expr": "donation_service:error_ratio:rate5m", "legendFormat": "error ratio" }],
@@ -116,7 +116,7 @@
     },
     {
       "id": 8,
-      "title": "Tráfego (req/s) — /donations",
+      "title": "Tráfego (req/s) - /donations",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
       "targets": [{ "expr": "donation_service:requests:rate5m", "legendFormat": "req/s" }]

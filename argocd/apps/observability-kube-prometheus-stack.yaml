@@ -27,7 +27,7 @@ spec:
     syncOptions:
       - CreateNamespace=true
       # Os CRDs do Prometheus Operator (Alertmanager/Prometheus/PrometheusRule) têm schema
-      # OpenAPI enorme — o apply client-side padrão do kubectl estoura o limite de 262144
+      # OpenAPI enorme - o apply client-side padrão do kubectl estoura o limite de 262144
       # bytes da annotation kubectl.kubernetes.io/last-applied-configuration. Server-Side
       # Apply é a solução documentada da própria comunidade do chart para esse problema.
       - ServerSideApply=true

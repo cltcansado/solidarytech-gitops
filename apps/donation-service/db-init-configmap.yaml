@@ -5,8 +5,8 @@ metadata:
   namespace: solidarytech
   annotations:
     # Precisa existir ANTES do Job de PreSync (db-init-job.yaml) que o monta como volume.
-    # Sem isso, o ArgoCD aplica este ConfigMap só na fase normal de Sync — que roda DEPOIS
-    # do PreSync — e o Job trava em ContainerCreating (`configmap not found`). Marcando este
+    # Sem isso, o ArgoCD aplica este ConfigMap só na fase normal de Sync - que roda DEPOIS
+    # do PreSync - e o Job trava em ContainerCreating (`configmap not found`). Marcando este
     # recurso também como hook PreSync, com sync-wave anterior ao do Job, garante a ordem.
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/sync-wave: "-2"

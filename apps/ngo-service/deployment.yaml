@@ -20,7 +20,7 @@ spec:
         prometheus.io/port: "8081"
         prometheus.io/path: "/metrics"
     spec:
-      # roda preferencialmente no node group Spot (não-crítico) — FinOps
+      # roda preferencialmente no node group Spot (não-crítico) - FinOps
       tolerations:
         - key: "solidarytech.io/spot"
           operator: "Equal"
@@ -28,7 +28,7 @@ spec:
           effect: "PreferNoSchedule"
       securityContext:
         runAsNonRoot: true
-        # ver comentário equivalente em apps/donation-service/deployment.yaml —
+        # ver comentário equivalente em apps/donation-service/deployment.yaml -
         # distroless:nonroot exige runAsUser numérico explícito.
         runAsUser: 65532
         runAsGroup: 65532
@@ -41,7 +41,7 @@ spec:
           envFrom:
             - configMapRef: { name: ngo-service-config }
             - secretRef: { name: ngo-service-db }
-          # Rightsizing inicial (SEM histórico de carga real) — ver docs/FINOPS-FORECAST.md
+          # Rightsizing inicial (SEM histórico de carga real) - ver docs/FINOPS-FORECAST.md
           # para os valores ajustados após a Etapa E13 (carga real observada via Prometheus).
           resources:
             requests:
@@ -55,7 +55,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
-            # /live em vez de /health de propósito — ver achado #13 (donation-service).
+            # /live em vez de /health por design - ver achado #13 (donation-service).
             httpGet: { path: /live, port: 8081 }
             initialDelaySeconds: 15
             periodSeconds: 20

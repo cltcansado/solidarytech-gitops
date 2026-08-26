@@ -27,7 +27,7 @@ spec:
           effect: "PreferNoSchedule"
       securityContext:
         runAsNonRoot: true
-        # ver comentário equivalente em apps/donation-service/deployment.yaml —
+        # ver comentário equivalente em apps/donation-service/deployment.yaml -
         # distroless:nonroot exige runAsUser numérico explícito.
         runAsUser: 65532
         runAsGroup: 65532
@@ -44,7 +44,7 @@ spec:
               value: "solidarytech"
             - name: HEAL_COOLDOWN_SECONDS
               value: "300"
-            # HEALER_WEBHOOK_TOKEN não é setado de propósito: o endpoint só é exposto
+            # HEALER_WEBHOOK_TOKEN fica sem valor por decisão consciente: o endpoint só é exposto
             # dentro do cluster (ClusterIP, sem Ingress) e só o Alertmanager do próprio
             # cluster o alcança. Ver docs/ITSM-AIOPS.md para o hardening recomendado
             # (Alertmanager `http_config.authorization` + este token) antes de expor

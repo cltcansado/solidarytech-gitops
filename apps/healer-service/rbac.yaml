@@ -5,7 +5,7 @@ metadata:
   namespace: solidarytech
 ---
 # Least privilege: só pode LER e ATUALIZAR (patch) Deployments dentro do namespace
-# `solidarytech` — não pode deletar, não pode tocar em outros namespaces, não pode
+# `solidarytech` - não pode deletar, não pode tocar em outros namespaces, não pode
 # escalar privilégios. Escopo mínimo necessário para o rollout restart automático.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role

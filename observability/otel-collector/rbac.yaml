@@ -5,7 +5,7 @@ metadata:
   namespace: observability
 ---
 # k8sattributes processor precisa listar/observar Pods do cluster inteiro para enriquecer
-# spans/métricas com metadata (namespace, pod, node) — por isso é ClusterRole, não Role.
+# spans/métricas com metadata (namespace, pod, node) - por isso é ClusterRole, não Role.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

@@ -4,7 +4,7 @@ metadata:
   name: ngo-service-db-init
   namespace: solidarytech
   annotations:
-    # Precisa existir ANTES do Job de PreSync (db-init-job.yaml) que o monta como volume —
+    # Precisa existir ANTES do Job de PreSync (db-init-job.yaml) que o monta como volume -
     # mesmo motivo documentado em donation-service/db-init-configmap.yaml.
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/sync-wave: "-2"

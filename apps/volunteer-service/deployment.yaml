@@ -27,7 +27,7 @@ spec:
           effect: "PreferNoSchedule"
       securityContext:
         runAsNonRoot: true
-        # ver comentário equivalente em apps/donation-service/deployment.yaml —
+        # ver comentário equivalente em apps/donation-service/deployment.yaml -
         # distroless:nonroot exige runAsUser numérico explícito.
         runAsUser: 65532
         runAsGroup: 65532

@@ -5,7 +5,7 @@ metadata:
   namespace: solidarytech
   annotations:
     # Hook do ArgoCD: roda ANTES do sync dos demais recursos, e é recriado (Replace) a cada
-    # sync — mesmo padrão de donation-service/db-init-job.yaml.
+    # sync - mesmo padrão de donation-service/db-init-job.yaml.
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
     argocd.argoproj.io/sync-wave: "-1"

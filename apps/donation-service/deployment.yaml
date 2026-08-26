@@ -7,7 +7,7 @@ metadata:
     app: donation-service
     solidarytech.io/tier: critical
 spec:
-  replicas: 3 # Hot Path — mais réplicas que os outros 2 serviços por padrão
+  replicas: 3 # Hot Path - mais réplicas que os outros 2 serviços por padrão
   selector:
     matchLabels:
       app: donation-service
@@ -56,14 +56,14 @@ spec:
               cpu: 500m
               memory: 256Mi
           readinessProbe:
-            # Checa o banco (HealthHandler) — tira o pod do Service se o RDS estiver fora,
+            # Checa o banco (HealthHandler) - tira o pod do Service se o RDS estiver fora,
             # sem matar o container.
             httpGet: { path: /health, port: 8082 }
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
-            # NÃO aponta para /health de propósito: livenessProbe existe pra detectar o
-            # processo travado, não uma dependência externa fora do ar — se apontasse pra
+            # NÃO aponta para /health por design: livenessProbe existe pra detectar o
+            # processo travado, não uma dependência externa fora do ar - se apontasse pra
             # /health, uma queda do RDS derrubaria pods saudáveis em CrashLoopBackOff (visto
             # em incidente real desta entrega, documentado no relatório de SRE/PCN-DR).
             httpGet: { path: /live, port: 8082 }

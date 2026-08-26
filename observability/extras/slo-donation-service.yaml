@@ -1,10 +1,10 @@
-# SLIs/SLOs formais do donation-service — definição textual completa em
+# SLIs/SLOs formais do donation-service - definição textual completa em
 # docs/SRE-SLI-SLO-SLA.md. Este PrometheusRule é a fonte de verdade OPERACIONAL: alimenta o
 # Dashboard SRE (Error Budget) e dispara os alertas que acionam o healer-service.
 #
-# SLI 1 — Disponibilidade: proporção de requisições HTTP não-5xx.
+# SLI 1 - Disponibilidade: proporção de requisições HTTP não-5xx.
 #   SLO: 99.9% em janela móvel de 30 dias (Error Budget = 0.1% = ~43min/mês)
-# SLI 2 — Latência: proporção de requisições respondidas em < 300ms.
+# SLI 2 - Latência: proporção de requisições respondidas em < 300ms.
 #   SLO: 99% em janela móvel de 30 dias
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
@@ -98,7 +98,7 @@ spec:
           annotations:
             summary: "volunteer-service reiniciando repetidamente"
 
-        # Alerta de Error Budget (30 dias) — não aciona auto-healing, é sinal de gestão/SRE.
+        # Alerta de Error Budget (30 dias) - não aciona auto-healing, é sinal de gestão/SRE.
         - alert: DonationServiceErrorBudgetBurnHigh
           expr: |
             (1 - avg_over_time(donation_service:error_ratio:rate5m[1d])) < 0.999
