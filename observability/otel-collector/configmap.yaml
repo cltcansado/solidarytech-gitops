@@ -40,8 +40,11 @@ data:
         traces:
           receivers: [otlp]
           processors: [k8sattributes, resourcedetection, batch]
-          exporters: [debug, datadog]
+          # `datadog` sai da lista enquanto a API key não estiver no Secret apm-credentials
+          # (senão o Collector entra em crashloop). Readicionar junto com o
+          # `terraform apply -var datadog_api_key=...`.
+          exporters: [debug]
         metrics:
           receivers: [otlp]
           processors: [resourcedetection, batch]
-          exporters: [debug, prometheus, datadog]
+          exporters: [debug, prometheus]
