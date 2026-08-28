@@ -34,7 +34,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: healer-service
-          image: 432540795967.dkr.ecr.us-east-1.amazonaws.com/solidarytech/healer-service:72b403f96166
+          image: 320688111502.dkr.ecr.us-east-1.amazonaws.com/solidarytech/healer-service:72b403f96166
           ports:
             - containerPort: 8090
           env:
