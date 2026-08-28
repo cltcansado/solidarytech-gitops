@@ -67,6 +67,12 @@ grafana:
   # (fica sempre OutOfSync nesse Secret). TROCAR antes de expor a UI do Grafana publicamente
   # (hoje só ClusterIP, sem Ingress).
   adminPassword: "SolidaryTech2026!"
+  # ELB Classic exposto só pro IP de quem grava a demo. Se o IP mudar, editar aqui +
+  # nos 3 apps/*/service.yaml e `git push`.
+  service:
+    type: LoadBalancer
+    loadBalancerSourceRanges:
+      - 177.40.131.8/32
   # Sem persistência proposital: dashboards já são provisionados de forma declarativa via
   # o sidecar (grafana.sidecar.dashboards, abaixo), então não há estado que precise
   # sobreviver a um restart do pod. Isso também evita todo o problema de Multi-Attach de

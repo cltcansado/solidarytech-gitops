@@ -12,4 +12,9 @@ spec:
     - port: 8082
       targetPort: 8082
       name: http
-  type: ClusterIP
+  # Exposto na internet SÓ para o IP de quem grava a demo (ELB Classic da AWS). O
+  # donation-service tem o endpoint /debug/crash habilitado (CHAOS_ENDPOINTS_ENABLED) —
+  # NUNCA usar 0.0.0.0/0 aqui. Se o IP mudar, editar a linha abaixo e `git push`.
+  type: LoadBalancer
+  loadBalancerSourceRanges:
+    - 177.40.131.8/32

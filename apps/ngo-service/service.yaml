@@ -12,4 +12,8 @@ spec:
     - port: 8081
       targetPort: 8081
       name: http
-  type: ClusterIP
+  # Exposto na internet só para o IP de quem grava a demo (ELB Classic). Se o IP mudar,
+  # editar a linha abaixo nos 3 services + values do Grafana e `git push`.
+  type: LoadBalancer
+  loadBalancerSourceRanges:
+    - 177.40.131.8/32
