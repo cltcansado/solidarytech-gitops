@@ -8,3 +8,7 @@ data:
   ENVIRONMENT: "production"
   AWS_REGION: "us-east-1"
   OTEL_EXPORTER_OTLP_ENDPOINT: "otel-collector.observability.svc.cluster.local:4317"
+  # Habilita o endpoint /debug/crash usado na demonstração de self-healing/MTTR
+  # (scripts/chaos-crash-donation-service.sh). Ambiente de hackathon/demo - em produção
+  # real isto ficaria "false". Ver comentário em apps/donation-service/main.go.
+  CHAOS_ENDPOINTS_ENABLED: "true"
