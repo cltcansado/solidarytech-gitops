@@ -9,7 +9,7 @@ configuration:
   backupStorageLocation:
     - name: default
       provider: aws
-      bucket: solidarytech-velero-backups-320688111502 # igual ao output `velero_bucket_name` do Terraform
+      bucket: solidarytech-velero-backups-822349061423 # igual ao output `velero_bucket_name` do Terraform
       config:
         region: us-west-2 # cross-region por definição: sobrevive à perda da região principal (us-east-1)
   volumeSnapshotLocation:
