@@ -44,11 +44,13 @@ spec:
 
     - name: donation-service.slo.alerts
       rules:
-        # Burn-rate rápido (1h): consumindo o error budget de 30 dias rápido demais -> crítico.
+        # Burn-rate rápido: taxa de erro 5xx acima de 5% no Hot Path. `for: 2m` - dois minutos
+        # de erro sustentado nesse serviço já é incidente com impacto financeiro direto (doação
+        # perdida), não ruído; não justifica esperar os 5m usados em serviços menos críticos.
         - alert: DonationServiceHighErrorRate
           expr: |
             donation_service:error_ratio:rate5m > 0.05
-          for: 5m
+          for: 2m
           labels:
             severity: critical
             service: donation-service
