@@ -34,7 +34,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
       containers:
         - name: volunteer-service
-          image: 822349061423.dkr.ecr.us-east-1.amazonaws.com/solidarytech/volunteer-service:dff0fc6da601
+          image: 822349061423.dkr.ecr.us-east-1.amazonaws.com/solidarytech/volunteer-service:520e9add0fb8
           ports:
             - containerPort: 8083
           envFrom:
